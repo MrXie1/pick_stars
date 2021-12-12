@@ -42,13 +42,20 @@ cc.Class({
   },
   onPicked: function onPicked() {
     // 当星星被收集时，调用 Game 脚本中的接口，生成一个新的星星
-    this.game.spawnNewStar(); // 调用 Game 脚本的得分方法
-
-    this.game.gainScore(); // 然后销毁当前星星节点
-
-    this.node.destroy();
+    // this.game.spawnNewStar();
+    // 调用 Game 脚本的得分方法
+    this.game.gainScore();
+    this.game.despawnStar(this.node); // 然后销毁当前星星节点
+    // this.node.destroy();
   },
   start: function start() {},
+  reuse: function reuse(game) {
+    this.game = game;
+    this.enabled = true;
+    this.node.opacity = 255;
+  },
+  unuse: function unuse() {// 因为回收时不执行任何操作，所以该方法可以不写
+  },
   update: function update(dt) {
     // 每帧判断星星和主角之间的距离是否小于收集距离
     if (this.getPlayerDistance() < this.pickRadius) {

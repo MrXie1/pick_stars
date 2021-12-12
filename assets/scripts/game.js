@@ -58,7 +58,10 @@ cc.Class({
         this.enabled = false;
         // 生成一个新的星星
         // this.spawnNewStar();      
-        this.score = 0  
+        this.score = 0;
+        this.currentStar = null;
+        // 星星对象池
+        this.starPool = new cc.NodePool('Star');
     },
     onStartGame: function () {
         this.gameOverNode.active = false;
@@ -76,19 +79,26 @@ cc.Class({
     },
     // 随机生成新的星星
     spawnNewStar: function() {
+        var newStar = null;
         // 使用给定的模板在场景中生成一个新节点
-        var newStar = cc.instantiate(this.starPrefab);
-        // 将新增的节点添加到 Canvas 节点下面
-        this.node.addChild(newStar);
+        if (this.starPool.size() > 0) {
+            newStar = this.starPool.get(this); // this will be passed to Star's reuse method
+        } else {
+            newStar = cc.instantiate(this.starPrefab);
+            // pass Game instance to star
+            newStar.getComponent('star').reuse(this);
+        }
         // 为星星设置一个随机位置
         newStar.setPosition(this.getNewStarPosition());
-        newStar.getComponent('star').game = this;
-        
+        // 将新增的节点添加到 Canvas 节点下面
+        this.node.addChild(newStar);
+    
         // 重置计时器，根据消失时间范围随机取一个值
         this.starDuration = this.minStarDuration + Math.random() * (this.maxStarDuration - this.minStarDuration);
         this.timer = 0;
+    
+        this.currentStar = newStar;
     },
-
     getNewStarPosition: function () {
         var randX = 0;
         // 根据地平面位置和主角跳跃高度，随机得到一个星星的 y 坐标
@@ -127,8 +137,13 @@ cc.Class({
         this.btnNode.x = 0
         // 停止 Player 节点的跳跃动作
         this.player.stopAllActions(); 
-
+        this.currentStar.destroy();
         // 重新加载场景 game
         // cc.director.loadScene('game');
-    }
+    },
+    // 回收代码
+    despawnStar (star) {
+        this.starPool.put(star);
+        this.spawnNewStar();
+    },
 });
