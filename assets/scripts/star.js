@@ -42,8 +42,9 @@ cc.Class({
     onPicked: function() {
         // 当星星被收集时，调用 Game 脚本中的接口，生成一个新的星星
         // this.game.spawnNewStar();
+        var pos = this.node.getPosition();
         // 调用 Game 脚本的得分方法
-        this.game.gainScore();    
+        this.game.gainScore(pos);    
         this.game.despawnStar(this.node);    
         // 然后销毁当前星星节点
         // this.node.destroy();

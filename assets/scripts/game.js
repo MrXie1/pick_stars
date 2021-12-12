@@ -13,6 +13,11 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        // 得分动画资源
+        animRootPrefab: {
+            default: null,
+            type: cc.Prefab
+        },
         // 星星产生后消失时间的随机范围
         maxStarDuration: 0,
         minStarDuration: 0,
@@ -62,6 +67,7 @@ cc.Class({
         this.currentStar = null;
         // 星星对象池
         this.starPool = new cc.NodePool('Star');
+        this.scorePool = new cc.NodePool('ScoreAnim');
     },
     onStartGame: function () {
         this.gameOverNode.active = false;
@@ -125,10 +131,16 @@ cc.Class({
         this.timer += dt;        
     },
 
-    gainScore: function () {
+    gainScore: function (pos) {
         this.score += 1;
         // 更新 scoreDisplay Label 的文字
         this.scoreDisplay.string = 'Score: ' + this.score;
+            // 播放特效
+        this.currentAnimRoot = this.spawnAnimRoot();
+        this.node.addChild(this.currentAnimRoot);
+        console.log('pos',pos);
+        this.currentAnimRoot.setPosition(pos);
+        this.currentAnimRoot.getComponent(cc.Animation).play('score_pop');
         // 播放得分音效
         cc.audioEngine.playEffect(this.scoreAudio, false);        
     },
@@ -145,5 +157,20 @@ cc.Class({
     despawnStar (star) {
         this.starPool.put(star);
         this.spawnNewStar();
+    },
+    // 得分生成动画预制
+    spawnAnimRoot: function () {
+        var fx;
+        if (this.scorePool.size() > 0) {
+            fx = this.scorePool.get(this);
+        } else {
+            fx = cc.instantiate(this.animRootPrefab);
+            fx.getComponent('scoreAnim').reuse(this);
+        }
+        return fx;
+    },
+    // 得分动画资源回收
+    despawnAnimRoot () {
+        this.scorePool.put(this.currentAnimRoot);
     },
 });
