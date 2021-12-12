@@ -22,16 +22,27 @@ cc.Class({
             default: null,
             type: cc.AudioClip
         },      
+        // 主角跳跃高度
+        jumpHeight: 0,
+        // 主角跳跃持续时间
+        jumpDuration: 0,
+        // 辅助形变动作时间
+        squashDuration: 0,
     },
     runJumpAction () {
         // 跳跃上升
         var jumpUp = cc.tween().by(this.jumpDuration, {y: this.jumpHeight}, {easing: 'sineOut'});
         // 下落
         var jumpDown = cc.tween().by(this.jumpDuration, {y: -this.jumpHeight}, {easing: 'sineIn'});
-
+        // 形变
+        var squash = cc.scaleTo(this.squashDuration, 1, 0.6);
+        var stretch = cc.scaleTo(this.squashDuration, 1, 1.2);
+        var scaleBack = cc.scaleTo(this.squashDuration, 1, 1);
+        // 添加一个回调函数，用于在动作结束时调用我们定义的其他方法
+        // var callback = cc.callFunc(this.playJumpSound, this);
         // 创建一个缓动，按 jumpUp、jumpDown 的顺序执行动作 
         // .call 添加一个回调函数，在前面的动作都结束时调用我们定义的 playJumpSound() 方法
-        var tween = cc.tween().sequence(jumpUp, jumpDown).call(this.playJumpSound, this);
+        var tween = cc.tween().sequence(jumpUp, jumpDown, squash, stretch, scaleBack).call(this.playJumpSound, this);
         // 不断重复
         return cc.tween().repeatForever(tween);
     },
