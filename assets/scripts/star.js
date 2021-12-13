@@ -38,7 +38,7 @@ cc.Class({
         var dist = this.node.position.sub(playerPos).mag();
         return dist;
     },
-
+    // 被收集
     onPicked: function() {
         // 当星星被收集时，调用 Game 脚本中的接口，生成一个新的星星
         // this.game.spawnNewStar();
