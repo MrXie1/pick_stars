@@ -55,9 +55,13 @@ cc.Class({
         // console.log('down', event.keyCode)
         switch(event.keyCode) {
             case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
                 this.accLeft = true;
+                this.accRight = false;
                 break;
             case cc.macro.KEY.d:
+            case cc.macro.KEY.right:    
+                this.accLeft = false;
                 this.accRight = true;
                 break;
             }
@@ -68,9 +72,11 @@ cc.Class({
         // console.log('up', event.keyCode)
         switch(event.keyCode) {
             case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
                 this.accLeft = false;
                 break;
             case cc.macro.KEY.d:
+            case cc.macro.KEY.right:
                 this.accRight = false;
                 break;
         }
